@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <title>Ehtiyat Hissələri</title>
+    <style>
+        :root { --tap-orange: #ff4500; }
+        body { font-family: sans-serif; background: #f2f2f2; margin: 0; padding-bottom: 70px; }
+        header { background: #fff; padding: 15px; border-bottom: 1px solid #ddd; display: flex; align-items: center; }
+        .search-input { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 5px; }
+        .ad-container { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 10px; }
+        .ad-card { background: white; border-radius: 8px; overflow: hidden; padding: 10px; }
+        .ad-card img { width: 100%; height: 100px; object-fit: cover; }
+        .nav-bar { position: fixed; bottom: 0; width: 100%; height: 60px; background: white; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #ddd; }
+        .add-btn { background: var(--tap-orange); color: white; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px; margin-bottom: 25px; }
+    </style>
+</head>
+<body>
+
+<header>
+    <input type="text" class="search-input" placeholder="Axtarış...">
+    <select id="langSelect" onchange="changeLanguage()">
+        <option value="az">AZ</option><option value="en">EN</option>
+    </select>
+</header>
+
+<div class="ad-container" id="adsGrid"></div>
+
+<div class="nav-bar">
+    <div onclick="alert('Ana Səhifə')">🏠</div>
+    <div onclick="showFavorites()">❤️</div>
+    <div class="add-btn" onclick="openModal()">+</div>
+    <div onclick="alert('Mesajlar')">💬</div>
+    <div onclick="registerUser()">👤</div>
+</div>
+
+<div id="newAdModal" style="display:none; position:fixed; top:20%; left:10%; width:80%; background:white; padding:20px; border:2px solid orange;">
+    <input type="text" id="adTitle" placeholder="Adı"><br>
+    <input type="text" id="adPrice" placeholder="Qiymət"><br>
+    <input type="file" id="adImg"><br>
+    <button onclick="saveAd()">Yadda Saxla</button>
+</div>
+
+<script>
+    // 1. ELAN YARATMA VƏ YADDA SAXLAMA
+    function saveAd() {
+        let title = document.getElementById('adTitle').value;
+        let price = document.getElementById('adPrice').value;
+        let file = document.getElementById('adImg').files[0];
+        let reader = new FileReader();
+        reader.onload = function(e) {
+            let ads = JSON.parse(localStorage.getItem('myAds')) || [];
+            ads.push({title, price, img: e.target.result, fav: false});
+            localStorage.setItem('myAds', JSON.stringify(ads));
+            renderAds();
+            document.getElementById('newAdModal').style.display = 'none';
+        }
+        reader.readAsDataURL(file);
+    }
+
+    // 2. ELANLARI GÖSTƏRMƏ (Favori və Mesaj düymələri ilə)
+    function renderAds() {
+        let ads = JSON.parse(localStorage.getItem('myAds')) || [];
+        document.getElementById('adsGrid').innerHTML = ads.map((ad, index) => `
+            <div class="ad-card">
+                <img src="${ad.img}">
+                <div>${ad.price} AZN</div>
+                <div>${ad.title}</div>
+                <button onclick="toggleFav(${index})">${ad.fav ? '❤️' : '🤍'}</button>
+                <button onclick="sendMessage('${ad.title}')">💬 Mesaj</button>
+                <button onclick="deleteAd(${index})">Sil</button>
+            </div>
+        `).join('');
+    }
+
+    // 3. FAVORİLƏR VƏ MESAJLAR
+    function toggleFav(index) {
+        let ads = JSON.parse(localStorage.getItem('myAds'));
+        ads[index].fav = !ads[index].fav;
+        localStorage.setItem('myAds', JSON.stringify(ads));
+        renderAds();
+    }
+
+    function sendMessage(title) {
+        alert("Satıcıya mesaj göndərildi: " + title + " haqqında.");
+    }
+
+    function deleteAd(index) {
+        let ads = JSON.parse(localStorage.getItem('myAds'));
+        ads.splice(index, 1);
+        localStorage.setItem('myAds', JSON.stringify(ads));
+        renderAds();
+    }
+
+    function registerUser() {
+        let name = prompt("İstifadəçi adı:");
+        if(name) localStorage.setItem('user', name);
+    }
+
+    function openModal() { document.getElementById('newAdModal').style.display = 'block'; }
+
+    window.onload = renderAds;
+</script>
+</body>
+</html>
