@@ -1,3 +1,13 @@
+const SUPABASE_URL = "https://bpqxidtrunforkvulapt.supabase.co";
+
+const SUPABASE_KEY = "sb_publishable_MZCtKY-2wpKDV2fTSQcZMQ_myk48sAN";
+
+const supabase = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+let currentUser = null;
 let currentUser = null;
 
 window.onload = async function () {
