@@ -981,8 +981,86 @@ document
 searchAds
 );
 
+function openProfile(){
+
+    if(!currentUser){
+
+        alert("Əvvəlcə hesabınıza daxil olun.");
+
+        return;
+
+    }
+
+    let myAds =
+    document.getElementById("myAds");
+
+    if(myAds){
+
+        myAds.scrollIntoView({
+            behavior:"smooth"
+        });
+    }
+
+}
+
+function updateStatus(){
+
+    const status =
+    document.getElementById("status");
+
+    if(!status) return;
+
+    if(currentUser){
+
+        status.innerHTML =
+        "✅ Xoş gəlmisiniz, <b>" +
+        currentUser +
+        "</b>";
+
+    }else{
+
+        status.innerHTML =
+        "❌ Hesaba daxil olun";
+
+    }
+
+}
+
+setInterval(updateStatus,1000);
+
 </script>
+  function clearAdForm(){
 
-</body>
+document.getElementById("title").value="";
 
-</html>
+document.getElementById("price").value="";
+
+document.getElementById("image").value="";
+
+document.getElementById("phone").value="";
+
+document.getElementById("description").value="";
+
+document.getElementById("category").selectedIndex=0;
+
+}
+
+function refreshPage(){
+
+loadAds();
+
+showMyAds();
+
+}
+
+setInterval(function(){
+
+if(currentUser){
+
+refreshPage();
+
+}
+
+},30000);
+
+  
